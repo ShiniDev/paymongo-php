@@ -2,42 +2,83 @@
 
 namespace Paymongo\Entities;
 
+// Import related entities for cleaner code.
+use Paymongo\ApiResource;
+use Paymongo\Entities\Billing;
+use Paymongo\Entities\Refund;
+
 class Payment extends BaseEntity
 {
-    public function __construct($apiResource)
+    public ?string $id;
+    public ?int $amount;
+    public ?Billing $billing;
+    public ?string $currency;
+    public ?string $description;
+    public ?int $fee;
+    public ?bool $livemode;
+    public ?int $net_amount;
+    public ?string $statement_descriptor;
+    public ?string $status;
+    public ?int $available_at;
+    public ?int $created_at;
+    public ?int $paid_at;
+    public ?string $payout;
+    public ?int $updated_at;
+    public ?int $tax_amount;
+    public ?string $payment_intent_id;
+
+    /** @var object|array|null */
+    public $metadata;
+
+    /** @var object|null - The source of the payment (e.g., card, gcash). */
+    public ?object $source;
+
+    /** @var Refund[]|null */
+    public ?array $refunds;
+
+    /** @var array|null */
+    public ?array $taxes;
+
+    /**
+     * @param object $apiResource The raw payment object from the API.
+     */
+    public function __construct(object $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $this->id = $apiResource->id ?? null;
 
-        $this->id = $apiResource->id;
-        $this->amount = $attributes['amount'];
-        $this->billing = is_null($attributes['billing']) ? null : new \Paymongo\Entities\Billing($attributes['billing']);
-        $this->currency = $attributes['currency'];
-        $this->description = $attributes['description'];
-        $this->fee = $attributes['fee'];
-        $this->livemode = $attributes['livemode'];
-        $this->net_amount = $attributes['net_amount'];
-        $this->statement_descriptor = $attributes['statement_descriptor'];
-        $this->status = $attributes['status'];
-        $this->available_at = $attributes['available_at'];
-        $this->created_at = $attributes['created_at'];
-        $this->paid_at = $attributes['paid_at'];
-        $this->payout = $attributes['payout'];
-        $this->updated_at = $attributes['updated_at'];
-        $this->metadata = $attributes['metadata'];
-        $this->source = $attributes['source'];
-        $this->tax_amount = $attributes['tax_amount'];
-        $this->payment_intent_id = $attributes['payment_intent_id'];
+        $attributes = $apiResource->attributes ?? [];
+
+        $this->amount = $attributes['amount'] ?? null;
+        $this->currency = $attributes['currency'] ?? null;
+        $this->description = $attributes['description'] ?? null;
+        $this->fee = $attributes['fee'] ?? null;
+        $this->livemode = $attributes['livemode'] ?? null;
+        $this->net_amount = $attributes['net_amount'] ?? null;
+        $this->statement_descriptor = $attributes['statement_descriptor'] ?? null;
+        $this->status = $attributes['status'] ?? null;
+        $this->available_at = $attributes['available_at'] ?? null;
+        $this->created_at = $attributes['created_at'] ?? null;
+        $this->paid_at = $attributes['paid_at'] ?? null;
+        $this->payout = $attributes['payout'] ?? null;
+        $this->updated_at = $attributes['updated_at'] ?? null;
+        $this->metadata = $attributes['metadata'] ?? null;
+        $this->source = $attributes['source'] ?? null;
+        $this->tax_amount = $attributes['tax_amount'] ?? null;
+        $this->payment_intent_id = $attributes['payment_intent_id'] ?? null;
+        $this->taxes = $attributes['taxes'] ?? null;
+
+        // Safely instantiate the nested Billing object.
+        $billingData = $attributes['billing'] ?? null;
+        $this->billing = is_array($billingData) ? new Billing($billingData) : null;
+
+        // Safely instantiate nested Refund objects.
         $this->refunds = [];
-
-        if(is_array($attributes['refunds']) && !empty($attributes['refunds'])) {
-            $refunds = $attributes['refunds'];
-
-            foreach($refunds as $refund) {
-                $rowApiResource = new \Paymongo\ApiResource($refund);
-                $this->refunds[] = new \Paymongo\Entities\Refund($rowApiResource);
+        if (!empty($attributes['refunds']) && is_array($attributes['refunds'])) {
+            foreach ($attributes['refunds'] as $refund) {
+                // Preserving original logic of wrapping refund data in ApiResource.
+                $rowApiResource = new ApiResource($refund);
+                $this->refunds[] = new Refund($rowApiResource);
             }
         }
-
-        $this->taxes = $attributes['taxes'];
     }
 }

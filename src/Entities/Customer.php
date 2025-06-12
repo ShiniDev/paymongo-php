@@ -2,22 +2,39 @@
 
 namespace Paymongo\Entities;
 
-class Customer extends \Paymongo\Entities\BaseEntity
+class BillingAddress
 {
-    public function __construct($apiResource)
-    {
-        $attributes = $apiResource->attributes;
+    /** @var string|null */
+    public ?string $city;
 
-        $this->id = $apiResource->id;
-        $this->default_device = $attributes['default_device'];
-        $this->default_payment_method_id = $attributes['default_payment_method_id'];
-        $this->email = $attributes['email'];
-        $this->first_name = $attributes['first_name'];
-        $this->last_name = $attributes['last_name'];
-        $this->livemode = $attributes['livemode'];
-        $this->organization_id = $attributes['organization_id'];
-        $this->phone = $attributes['phone'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+    /** @var string|null */
+    public ?string $country;
+
+    /** @var string|null */
+    public ?string $line1;
+
+    /**
+     * Address line 2 is almost always optional.
+     * @var string|null
+     */
+    public ?string $line2;
+
+    /** @var string|null */
+    public ?string $postal_code;
+
+    /** @var string|null */
+    public ?string $state;
+
+    /**
+     * @param array $data The address data from the API.
+     */
+    public function __construct(array $data)
+    {
+        $this->city = $data['city'] ?? null;
+        $this->country = $data['country'] ?? null;
+        $this->line1 = $data['line1'] ?? null;
+        $this->line2 = $data['line2'] ?? null;
+        $this->postal_code = $data['postal_code'] ?? null;
+        $this->state = $data['state'] ?? null;
     }
 }

@@ -2,38 +2,73 @@
 
 namespace Paymongo\Entities;
 
+use Paymongo\Entities\Payment;
+
 class PaymentIntent extends \Paymongo\Entities\BaseEntity
 {
-    public function __construct($apiResource)
+    public ?string $id;
+    public ?int $amount;
+    public ?string $capture_type;
+    public ?string $client_key;
+    public ?string $currency;
+    public ?string $description;
+    public ?bool $livemode;
+    public ?string $statement_descriptor;
+    public ?string $status;
+    public ?string $setup_future_usage;
+    public ?int $created_at;
+    public ?int $updated_at;
+
+    /** @var object|null - Describes the last payment error. */
+    public ?object $last_payment_error;
+
+    /** @var string[]|null - Array of allowed payment method types. */
+    public ?array $payment_method_allowed;
+
+    /** @var Payment[]|null - Array of payments made with this PaymentIntent. */
+    public ?array $payments;
+
+    /** @var object|null - The next action required to complete the payment. */
+    public ?object $next_action;
+
+    /** @var object|null - Options for the payment method. */
+    public ?object $payment_method_options;
+
+    /** @var object|array|null */
+    public $metadata;
+
+    /**
+     * @param object $apiResource The raw PaymentIntent object from the API.
+     */
+    public function __construct(object $apiResource)
     {
-        $attributes = $apiResource->attributes;
+        $this->id = $apiResource->id ?? null;
 
-        $this->id = $apiResource->id;
-        $this->amount = $attributes['amount'];
-        $this->capture_type = $attributes['capture_type'];
-        $this->client_key = $attributes['client_key'];
-        $this->currency = $attributes['currency'];
-        $this->description = $attributes['description'];
-        $this->livemode = $attributes['livemode'];
-        $this->last_payment_error = $attributes['last_payment_error'];
-        $this->statement_descriptor = $attributes['statement_descriptor'];
-        $this->status = $attributes['status'];
-        $this->payment_method_allowed = $attributes['payment_method_allowed'];
+        $attributes = $apiResource->attributes ?? [];
+
+        $this->amount = $attributes['amount'] ?? null;
+        $this->capture_type = $attributes['capture_type'] ?? null;
+        $this->client_key = $attributes['client_key'] ?? null;
+        $this->currency = $attributes['currency'] ?? null;
+        $this->description = $attributes['description'] ?? null;
+        $this->livemode = $attributes['livemode'] ?? null;
+        $this->last_payment_error = $attributes['last_payment_error'] ?? null;
+        $this->statement_descriptor = $attributes['statement_descriptor'] ?? null;
+        $this->status = $attributes['status'] ?? null;
+        $this->payment_method_allowed = $attributes['payment_method_allowed'] ?? null;
+        $this->next_action = $attributes['next_action'] ?? null;
+        $this->payment_method_options = $attributes['payment_method_options'] ?? null;
+        $this->metadata = $attributes['metadata'] ?? null;
+        $this->setup_future_usage = $attributes['setup_future_usage'] ?? null;
+        $this->created_at = $attributes['created_at'] ?? null;
+        $this->updated_at = $attributes['updated_at'] ?? null;
+
         $this->payments = null;
-
-        if(!empty($attributes['payments'])) {
+        if (!empty($attributes['payments']) && is_array($attributes['payments'])) {
             $this->payments = [];
-
-            foreach($attributes['payments'] as $payment) {
-                $this->payments[] = new \Paymongo\Entities\Payment($payment);
+            foreach ($attributes['payments'] as $paymentData) {
+                $this->payments[] = new Payment($paymentData);
             }
         }
-
-        $this->next_action = $attributes['next_action'];
-        $this->payment_method_options = $attributes['payment_method_options'];
-        $this->metadata = empty($attributes['metadata']) ? null : $attributes['metadata'];
-        $this->setup_future_usage = $attributes['setup_future_usage'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
     }
 }

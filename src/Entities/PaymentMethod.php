@@ -2,18 +2,40 @@
 
 namespace Paymongo\Entities;
 
+use Paymongo\Entities\Billing;
+
 class PaymentMethod extends \Paymongo\Entities\BaseEntity
 {
-    public function __construct($apiResource)
-    {
-        $attributes = $apiResource->attributes;
+    public ?string $id;
+    public ?string $type;
+    public ?Billing $billing;
 
-        $this->id = $apiResource->id;
-        $this->type = $attributes['type'];
-        $this->billing = is_null($attributes['billing']) ? null : new \Paymongo\Entities\Billing($attributes['billing']);
-        $this->details = $attributes['details'];
-        $this->metadata = empty($attributes['metadata']) ? null : $attributes['metadata'];
-        $this->created_at = $attributes['created_at'];
-        $this->updated_at = $attributes['updated_at'];
+    /** @var object|null - Contains details specific to the payment method type (e.g., card number, expiry). */
+    public ?object $details;
+
+    /** @var object|array|null */
+    public $metadata;
+
+    public ?int $created_at;
+    public ?int $updated_at;
+
+    /**
+     * @param object $apiResource The raw PaymentMethod object from the API.
+     */
+    public function __construct(object $apiResource)
+    {
+        $this->id = $apiResource->id ?? null;
+
+        $attributes = $apiResource->attributes ?? [];
+
+        $this->type = $attributes['type'] ?? null;
+        $this->details = $attributes['details'] ?? null;
+        $this->metadata = $attributes['metadata'] ?? null;
+        $this->created_at = $attributes['created_at'] ?? null;
+        $this->updated_at = $attributes['updated_at'] ?? null;
+
+        // Safely instantiate the nested Billing object.
+        $billingData = $attributes['billing'] ?? null;
+        $this->billing = is_array($billingData) ? new Billing($billingData) : null;
     }
 }
