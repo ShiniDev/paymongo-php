@@ -62,7 +62,6 @@ class Payment extends BaseEntity
         $this->payout = $attributes['payout'] ?? null;
         $this->updated_at = $attributes['updated_at'] ?? null;
         $this->metadata = $attributes['metadata'] ?? null;
-        $this->source = $attributes['source'] ?? null;
         $this->tax_amount = $attributes['tax_amount'] ?? null;
         $this->payment_intent_id = $attributes['payment_intent_id'] ?? null;
 
