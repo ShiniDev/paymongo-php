@@ -29,7 +29,6 @@ The only supported installation method is via [Composer](https://getcomposer.org
 ```bash
 composer require shinidev/paymongo-php
 ```
-*(Note: For this command to work, you must publish your forked package on [Packagist.org](https://packagist.org/))*
 
 After installation, include Composer's autoloader in your project's startup script:
 ```php
