@@ -31,13 +31,13 @@ class Payment extends BaseEntity
     public $metadata;
 
     /** @var object|null - The source of the payment (e.g., card, gcash). */
-    public ?array $source;
+    public ?object $source;
 
     /** @var Refund[]|null */
     public ?array $refunds;
 
     /** @var array|null */
-    public ?array $taxes;
+    public ?object $taxes;
 
     /**
      * @param object $apiResource The raw payment object from the API.
@@ -65,14 +65,16 @@ class Payment extends BaseEntity
         $this->source = $attributes['source'] ?? null;
         $this->tax_amount = $attributes['tax_amount'] ?? null;
         $this->payment_intent_id = $attributes['payment_intent_id'] ?? null;
-        $this->taxes = $attributes['taxes'] ?? null;
 
         // Safely instantiate the nested Billing object.
         $billingData = $attributes['billing'] ?? null;
         $this->billing = is_array($billingData) ? new Billing($billingData) : null;
 
-        $sourceData = $attributes['source'] ?? null;
-        $this->source = is_null($sourceData) ? null : (array) $sourceData;
+        $taxes = $attributes['taxes'] ?? null;
+        $source = $attributes['source'] ?? null;
+        $this->taxes = is_null($taxes) ? null : (object) $taxes;
+        $this->source = is_null($source) ? null : (object) $source;
+
 
         // Safely instantiate nested Refund objects.
         $this->refunds = [];
