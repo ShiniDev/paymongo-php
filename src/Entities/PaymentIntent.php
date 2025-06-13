@@ -20,7 +20,7 @@ class PaymentIntent extends \Paymongo\Entities\BaseEntity
     public ?int $updated_at;
 
     /** @var object|null - Describes the last payment error. */
-    public ?object $last_payment_error;
+    public ?LastPaymentError $last_payment_error;
 
     /** @var string[]|null - Array of allowed payment method types. */
     public ?array $payment_method_allowed;
@@ -29,10 +29,10 @@ class PaymentIntent extends \Paymongo\Entities\BaseEntity
     public ?array $payments;
 
     /** @var object|null - The next action required to complete the payment. */
-    public ?object $next_action;
+    public ?NextAction $next_action;
 
     /** @var object|null - Options for the payment method. */
-    public ?object $payment_method_options;
+    public ?PaymentMethodOptions $payment_method_options;
 
     /** @var object|array|null */
     public $metadata;
@@ -52,12 +52,10 @@ class PaymentIntent extends \Paymongo\Entities\BaseEntity
         $this->currency = $attributes['currency'] ?? null;
         $this->description = $attributes['description'] ?? null;
         $this->livemode = $attributes['livemode'] ?? null;
-        $this->last_payment_error = $attributes['last_payment_error'] ?? null;
         $this->statement_descriptor = $attributes['statement_descriptor'] ?? null;
         $this->status = $attributes['status'] ?? null;
         $this->payment_method_allowed = $attributes['payment_method_allowed'] ?? null;
-        $this->next_action = $attributes['next_action'] ?? null;
-        $this->payment_method_options = $attributes['payment_method_options'] ?? null;
+
         $this->metadata = $attributes['metadata'] ?? null;
         $this->setup_future_usage = $attributes['setup_future_usage'] ?? null;
         $this->created_at = $attributes['created_at'] ?? null;
@@ -70,5 +68,15 @@ class PaymentIntent extends \Paymongo\Entities\BaseEntity
                 $this->payments[] = new Payment($paymentData);
             }
         }
+
+        $this->last_payment_error = null;
+        $last_payment_error = $attributes['last_payment_error'] ?? null;
+        $last_payment_error = is_null($last_payment_error) ? null : new LastPaymentError($last_payment_error);
+        $this->next_action = null;
+        $next_action = $attributes['next_action'] ?? null;
+        $next_action = is_null($next_action) ? null : new NextAction($next_action);
+        $this->payment_method_options = null;
+        $payment_method_options = $attributes['payment_method_options'] ?? null;
+        $payment_method_options = is_null($payment_method_options) ? null : new PaymentMethodOptions($payment_method_options);
     }
 }

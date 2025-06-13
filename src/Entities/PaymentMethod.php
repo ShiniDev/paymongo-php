@@ -10,8 +10,8 @@ class PaymentMethod extends \Paymongo\Entities\BaseEntity
     public ?string $type;
     public ?Billing $billing;
 
-    /** @var object|null - Contains details specific to the payment method type (e.g., card number, expiry). */
-    public ?object $details;
+    /** @var object|array|null - Contains details specific to the payment method type (e.g., card number, expiry). */
+    public $details;
 
     /** @var object|array|null */
     public $metadata;

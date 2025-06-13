@@ -23,7 +23,7 @@ class Link extends \Paymongo\Entities\BaseEntity
     /** @var Payment[]|null */
     public ?array $payments;
 
-    /** @var array|null */
+    /** @var Tax[]|null */
     public ?array $taxes;
 
     /** @var object|array|null */
@@ -52,7 +52,6 @@ class Link extends \Paymongo\Entities\BaseEntity
         $this->tax_amount = $attributes['tax_amount'] ?? null;
         $this->checkout_url = $attributes['checkout_url'] ?? null;
         $this->reference_number = $attributes['reference_number'] ?? null;
-        $this->taxes = $attributes['taxes'] ?? null;
         $this->metadata = $attributes['metadata'] ?? null;
         $this->created_at = $attributes['created_at'] ?? null;
         $this->updated_at = $attributes['updated_at'] ?? null;
@@ -62,6 +61,13 @@ class Link extends \Paymongo\Entities\BaseEntity
             $this->payments = [];
             foreach ($attributes['payments'] as $paymentData) {
                 $this->payments[] = new Payment($paymentData);
+            }
+        }
+        $this->taxes = null;
+        if (!empty($attributes['taxes'])) {
+            $this->taxes = [];
+            foreach ($attributes['taxes'] as $taxData) {
+                $this->taxes[] = new Tax($taxData);
             }
         }
     }

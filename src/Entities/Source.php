@@ -18,7 +18,7 @@ class Source extends \Paymongo\Entities\BaseEntity
     public ?int $updated_at;
 
     /** @var object|null - Contains URLs for redirection. */
-    public ?object $redirect;
+    public ?Redirect $redirect;
 
     /** @var object|array|null */
     public $metadata;
@@ -38,7 +38,6 @@ class Source extends \Paymongo\Entities\BaseEntity
         $this->description = $attributes['description'] ?? null;
         $this->livemode = $attributes['livemode'] ?? null;
         $this->status = $attributes['status'] ?? null;
-        $this->redirect = $attributes['redirect'] ?? null;
         $this->metadata = $attributes['metadata'] ?? null;
         $this->created_at = $attributes['created_at'] ?? null;
         $this->updated_at = $attributes['updated_at'] ?? null;
@@ -46,5 +45,8 @@ class Source extends \Paymongo\Entities\BaseEntity
         // Safely instantiate the nested Billing object.
         $billingData = $attributes['billing'] ?? null;
         $this->billing = is_array($billingData) ? new Billing($billingData) : null;
+
+        $redirectData = $attributes['redirect'] ?? null;
+        $this->redirect = is_array($redirectData) ? new Redirect($redirectData) : null;
     }
 }

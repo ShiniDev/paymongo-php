@@ -31,7 +31,7 @@ class Payment extends BaseEntity
     public $metadata;
 
     /** @var object|null - The source of the payment (e.g., card, gcash). */
-    public ?object $source;
+    public ?array $source;
 
     /** @var Refund[]|null */
     public ?array $refunds;
@@ -70,6 +70,9 @@ class Payment extends BaseEntity
         // Safely instantiate the nested Billing object.
         $billingData = $attributes['billing'] ?? null;
         $this->billing = is_array($billingData) ? new Billing($billingData) : null;
+
+        $sourceData = $attributes['source'] ?? null;
+        $this->source = is_null($sourceData) ? null : (array) $sourceData;
 
         // Safely instantiate nested Refund objects.
         $this->refunds = [];
