@@ -2,56 +2,121 @@
 
 namespace Paymongo\Services;
 
-class PaymentIntentService extends \Paymongo\Services\BaseService {
+use Paymongo\Entities\PaymentIntent;
+use Paymongo\Exceptions\ApiException;
+
+class PaymentIntentService extends \Paymongo\Services\BaseService
+{
     const URI = '/payment_intents';
 
-    public function create($params) {
-        $apiResponse = $this->httpClient->request([
+    /**
+     * Creates a new Payment Intent.
+     * @param array $params The data for the new payment intent.
+     * @return PaymentIntent The created PaymentIntent object.
+     * @throws ApiException
+     */
+    public function create(array $params): PaymentIntent
+    {
+        $apiResource = $this->httpClient->request([
             'method' => 'POST',
-            'url'    => "{$this->client->apiBaseUrl}/{$this->client->apiVersion}/" . self::URI,
-            'params' => $params
+            'url'    => $this->buildUrl(),
+            'params' => $params // CORRECT: Pass raw params. HttpClient will wrap it.
         ]);
 
-        return new \Paymongo\Entities\PaymentIntent($apiResource);
+        return new PaymentIntent($apiResource);
     }
 
-    public function retrieve($id) {
-        $apiResponse = $this->httpClient->request([
+    /**
+     * Retrieves a specific Payment Intent by its ID.
+     * @param string $id The ID of the Payment Intent to retrieve.
+     * @return PaymentIntent The retrieved PaymentIntent object.
+     * @throws ApiException
+     */
+    public function retrieve(string $id): PaymentIntent
+    {
+        $apiResource = $this->httpClient->request([
             'method' => 'GET',
-            'url'    => "{$this->client->apiBaseUrl}/{$this->client->apiVersion}/" . self::URI . "/{$id}",
+            'url'    => $this->buildUrl($id),
         ]);
 
-        return new \Paymongo\Entities\PaymentIntent($apiResource);
+        return new PaymentIntent($apiResource);
     }
 
-    public function capture($id, $params) {
-        $apiResponse = $this->httpClient->request([
+    /**
+     * Attaches a Payment Method to a Payment Intent.
+     * @param string $id The ID of the Payment Intent.
+     * @param array $params The attach data, typically including a `payment_method` ID.
+     * @return PaymentIntent The updated PaymentIntent object.
+     * @throws ApiException
+     */
+    public function attach(string $id, array $params): PaymentIntent
+    {
+        // This logic was in the original code and is preserved.
+        $params['origin'] = 'php';
+
+        $apiResource = $this->httpClient->request([
             'method' => 'POST',
-            'url'    => "{$this->client->apiBaseUrl}/{$this->client->apiVersion}/" . self::URI . "/{$id}/capture",
-            'params' => $params
+            'url'    => $this->buildUrl($id, 'attach'),
+            'params' => $params // CORRECT: Pass raw params.
         ]);
 
-        return new \Paymongo\Entities\PaymentIntent($apiResource);
+        return new PaymentIntent($apiResource);
     }
 
-    public function cancel($id) {
-        $apiResponse = $this->httpClient->request([
+    /**
+     * Captures a specific Payment Intent.
+     * @param string $id The ID of the Payment Intent to capture.
+     * @param array $params Optional parameters for the capture.
+     * @return PaymentIntent The captured PaymentIntent object.
+     * @throws ApiException
+     */
+    public function capture(string $id, array $params = []): PaymentIntent
+    {
+        $apiResource = $this->httpClient->request([
             'method' => 'POST',
-            'url'    => "{$this->client->apiBaseUrl}/{$this->client->apiVersion}/" . self::URI . "/{$id}/cancel",
+            'url'    => $this->buildUrl($id, 'capture'),
+            'params' => $params // CORRECT: Pass raw params.
         ]);
 
-        return new \Paymongo\Entities\PaymentIntent($apiResource);
+        return new PaymentIntent($apiResource);
     }
 
-    public function attach($id, $params) {
-      $params['origin'] = 'php';
+    /**
+     * Cancels a specific Payment Intent.
+     * @param string $id The ID of the Payment Intent to cancel.
+     * @return PaymentIntent The cancelled PaymentIntent object.
+     * @throws ApiException
+     */
+    public function cancel(string $id): PaymentIntent
+    {
+        $apiResource = $this->httpClient->request([
+            'method' => 'POST',
+            'url'    => $this->buildUrl($id, 'cancel'),
+            // No 'params' key since there is no payload.
+        ]);
 
-      $apiResponse = $this->httpClient->request([
-          'method' => 'POST',
-          'url'    => "{$this->client->apiBaseUrl}/{$this->client->apiVersion}/" . self::URI . "/{$id}/attach",
-          'params' => $params
-      ]);
+        return new PaymentIntent($apiResource);
+    }
 
-      return new \Paymongo\Entities\PaymentIntent($apiResource);
-  }
+    /**
+     * Helper method to build the full API endpoint URL, with support for actions.
+     *
+     * @param string $id Optional resource ID.
+     * @param string $action Optional action name (e.g., 'capture').
+     * @return string The complete URL.
+     */
+    private function buildUrl(string $id = '', string $action = ''): string
+    {
+        $url = "{$this->client->apiBaseUrl}/{$this->client->apiVersion}" . self::URI;
+
+        if ($id !== '') {
+            $url .= "/{$id}";
+        }
+
+        if ($action !== '') {
+            $url .= "/{$action}";
+        }
+
+        return $url;
+    }
 }

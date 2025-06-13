@@ -2,39 +2,38 @@
 
 namespace Paymongo\Entities;
 
-class BillingAddress
+class Customer extends \Paymongo\Entities\BaseEntity
 {
-    /** @var string|null */
-    public ?string $city;
-
-    /** @var string|null */
-    public ?string $country;
-
-    /** @var string|null */
-    public ?string $line1;
-
-    /**
-     * Address line 2 is almost always optional.
-     * @var string|null
-     */
-    public ?string $line2;
-
-    /** @var string|null */
-    public ?string $postal_code;
-
-    /** @var string|null */
-    public ?string $state;
+    public ?string $id;
+    public ?string $default_device;
+    public ?string $default_payment_method_id;
+    public ?string $email;
+    public ?string $first_name;
+    public ?string $last_name;
+    public ?bool $livemode;
+    public ?string $organization_id;
+    public ?string $phone;
+    public ?int $created_at;
+    public ?int $updated_at;
 
     /**
-     * @param array $data The address data from the API.
+     * @param object $apiResource The raw customer object from the API.
      */
-    public function __construct(array $data)
+    public function __construct(object $apiResource)
     {
-        $this->city = $data['city'] ?? null;
-        $this->country = $data['country'] ?? null;
-        $this->line1 = $data['line1'] ?? null;
-        $this->line2 = $data['line2'] ?? null;
-        $this->postal_code = $data['postal_code'] ?? null;
-        $this->state = $data['state'] ?? null;
+        $this->id = $apiResource->id ?? null;
+
+        $attributes = (array) $apiResource->attributes ?? [];
+
+        $this->default_device = $attributes['default_device'] ?? null;
+        $this->default_payment_method_id = $attributes['default_payment_method_id'] ?? null;
+        $this->email = $attributes['email'] ?? null;
+        $this->first_name = $attributes['first_name'] ?? null;
+        $this->last_name = $attributes['last_name'] ?? null;
+        $this->livemode = $attributes['livemode'] ?? null;
+        $this->organization_id = $attributes['organization_id'] ?? null;
+        $this->phone = $attributes['phone'] ?? null;
+        $this->created_at = $attributes['created_at'] ?? null;
+        $this->updated_at = $attributes['updated_at'] ?? null;
     }
 }

@@ -2,25 +2,45 @@
 
 namespace Paymongo\Exceptions;
 
-class BaseException extends \Exception
+use Exception;
+use Paymongo\Entities\Error;
+use Throwable;
+
+class BaseException extends Exception
 {
-    private $data;
-    protected $errors;
-    
-    public function __construct($data)
+    protected array $errorData;
+
+    /**
+     * @var Error[]|null Caches the instantiated Error objects.
+     */
+    protected ?array $errors = null;
+
+    /**
+     * @param string $message The exception message.
+     * @param array $data The decoded JSON data from the API error response.
+     * @param int $code The exception code.
+     * @param Throwable|null $previous The previous throwable for exception chaining.
+     */
+    public function __construct(string $message = "", array $data = [], int $code = 0, ?Throwable $previous = null)
     {
-        $this->data = $data;
-        $this->errors = $this->data['errors'];
+        parent::__construct($message, $code, $previous);
+        $this->errorData = $data['errors'] ?? [];
     }
 
-    public function getError()
+    /**
+     * Returns an array of Error objects from the API response.
+     *
+     * @return Error[]
+     */
+    public function getErrors(): array
     {
-        $errors = [];
-
-        foreach($this->errors as $error) {
-            $errors[] = new \Paymongo\Error($error);
+        if ($this->errors === null) {
+            $this->errors = array_map(
+                fn(array $error) => new Error($error),
+                $this->errorData
+            );
         }
 
-        return $errors;
+        return $this->errors;
     }
 }

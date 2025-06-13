@@ -44,7 +44,7 @@ class PaymentIntent extends \Paymongo\Entities\BaseEntity
     {
         $this->id = $apiResource->id ?? null;
 
-        $attributes = $apiResource->attributes ?? [];
+        $attributes = (array) $apiResource->attributes ?? [];
 
         $this->amount = $attributes['amount'] ?? null;
         $this->capture_type = $attributes['capture_type'] ?? null;

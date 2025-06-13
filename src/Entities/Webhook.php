@@ -25,7 +25,7 @@ class Webhook extends \Paymongo\Entities\BaseEntity
     {
         $this->id = $apiResource->id ?? null;
 
-        $attributes = $apiResource->attributes ?? [];
+        $attributes = (array) $apiResource->attributes ?? [];
 
         $this->livemode = $attributes['livemode'] ?? null;
         $this->secret_key = $attributes['secret_key'] ?? null;

@@ -29,7 +29,7 @@ class Refund extends \Paymongo\Entities\BaseEntity
     {
         $this->id = $apiResource->id ?? null;
 
-        $attributes = $apiResource->attributes ?? [];
+        $attributes = (array) $apiResource->attributes ?? [];
 
         $this->amount = $attributes['amount'] ?? null;
         $this->balance_transaction_id = $attributes['balance_transaction_id'] ?? null;

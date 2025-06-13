@@ -30,7 +30,7 @@ class Source extends \Paymongo\Entities\BaseEntity
     {
         $this->id = $apiResource->id ?? null;
 
-        $attributes = $apiResource->attributes ?? [];
+        $attributes = (array) $apiResource->attributes ?? [];
 
         $this->type = $attributes['type'] ?? null;
         $this->amount = $attributes['amount'] ?? null;

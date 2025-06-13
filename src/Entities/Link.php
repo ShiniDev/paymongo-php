@@ -39,7 +39,7 @@ class Link extends \Paymongo\Entities\BaseEntity
     {
         $this->id = $apiResource->id ?? null;
 
-        $attributes = $apiResource->attributes ?? [];
+        $attributes = (array) $apiResource->attributes ?? [];
 
         $this->amount = $attributes['amount'] ?? null;
         $this->archived = $attributes['archived'] ?? null;

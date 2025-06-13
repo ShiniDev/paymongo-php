@@ -2,54 +2,37 @@
 
 namespace Paymongo\Exceptions;
 
-class ApiException extends Exception
+use Paymongo\Entities\Error;
+
+/**
+ * The default exception thrown for a generic API error.
+ * Extends BaseException and adds the ability to filter errors.
+ */
+class ApiException extends BaseException
 {
-    public $jsonBody;
-
-    public function __construct($jsonBody)
+    /**
+     * Returns an array of Error objects from the API response.
+     *
+     * This method overrides the parent `getErrors()` to add the special
+     * ability to filter the errors by a source attribute.
+     *
+     * @param string $attribute Optionally filter errors by a specific source attribute.
+     * @return Error[]
+     */
+    public function getErrors(string $attribute = ''): array
     {
-        $this->jsonBody = $jsonBody;
-    }
+        // First, get all the error objects from the parent BaseException.
+        $allErrors = parent::getErrors();
 
-    public function errors($attribute='')
-    {
-        if (!empty($this->jsonBody)) {
-            if (!empty($attribute)) {
-                $errors = $this->errors();
-                
-                return array_filter($errors, function ($error) use ($attribute) {
-                    return ($error->hasSource() && $error->source->attribute == $attribute);
-                });
-            } else {
-                $errors = json_decode($this->jsonBody, true)['errors'];
-                
-                return array_map(function ($error) {
-                    return new Error($error);
-                }, $errors);
-            }
+        // If no attribute is specified for filtering, return all the errors.
+        if ($attribute === '') {
+            return $allErrors;
         }
 
-        return [];
-    }
-
-    public static function factory($message, $jsonBody)
-    {
-        $message .= ' ' . self::digestApiError($jsonBody);
-        $instance = new static($message);
-        $instance->jsonBody = $jsonBody;
-        
-        return $instance;
-    }
-    
-    public static function digestApiError($jsonBody)
-    {
-        $body = json_decode($jsonBody, true);
-        $apiErrorMessage = '';
-
-        foreach ($body['errors'] as $error) {
-            $apiErrorMessage .= $error['meta']['type'] . ': ' . $error['code'] . ' - ' . $error['detail'];
-        }
-        
-        return $apiErrorMessage;
+        // Otherwise, filter the errors and return the result.
+        return array_filter(
+            $allErrors,
+            fn(Error $error) => $error->hasSource() && $error->source->attribute === $attribute
+        );
     }
 }

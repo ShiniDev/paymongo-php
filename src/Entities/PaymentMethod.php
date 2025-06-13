@@ -26,7 +26,7 @@ class PaymentMethod extends \Paymongo\Entities\BaseEntity
     {
         $this->id = $apiResource->id ?? null;
 
-        $attributes = $apiResource->attributes ?? [];
+        $attributes = (array) $apiResource->attributes ?? [];
 
         $this->type = $attributes['type'] ?? null;
         $this->details = $attributes['details'] ?? null;

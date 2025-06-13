@@ -33,7 +33,7 @@ class Event extends \Paymongo\Entities\BaseEntity
         // Safely access properties from the main event object.
         $this->id = $apiResource->id ?? null;
 
-        $attributes = $apiResource->attributes ?? [];
+        $attributes = (array) $apiResource->attributes ?? [];
 
         // Safely access properties from the nested 'attributes' object.
         $this->type = $attributes['type'] ?? null;
