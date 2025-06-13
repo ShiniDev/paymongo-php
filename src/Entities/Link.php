@@ -60,6 +60,7 @@ class Link extends \Paymongo\Entities\BaseEntity
         if (!empty($attributes['payments'])) {
             $this->payments = [];
             foreach ($attributes['payments'] as $paymentData) {
+                $paymentData = (object) $paymentData; // Ensure it's an object for consistency.
                 $this->payments[] = new Payment($paymentData);
             }
         }
@@ -67,6 +68,7 @@ class Link extends \Paymongo\Entities\BaseEntity
         if (!empty($attributes['taxes'])) {
             $this->taxes = [];
             foreach ($attributes['taxes'] as $taxData) {
+                $taxData = (array) $taxData;
                 $this->taxes[] = new Tax($taxData);
             }
         }

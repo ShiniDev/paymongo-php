@@ -65,6 +65,7 @@ class PaymentIntent extends \Paymongo\Entities\BaseEntity
         if (!empty($attributes['payments']) && is_array($attributes['payments'])) {
             $this->payments = [];
             foreach ($attributes['payments'] as $paymentData) {
+                $paymentData = (object) $paymentData;
                 $this->payments[] = new Payment($paymentData);
             }
         }

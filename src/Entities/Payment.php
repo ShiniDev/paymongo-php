@@ -80,6 +80,7 @@ class Payment extends BaseEntity
         if (!empty($attributes['refunds']) && is_array($attributes['refunds'])) {
             foreach ($attributes['refunds'] as $refund) {
                 // Preserving original logic of wrapping refund data in ApiResource.
+                $refund = (array) $refund;
                 $rowApiResource = new ApiResource($refund);
                 $this->refunds[] = new Refund($rowApiResource);
             }
